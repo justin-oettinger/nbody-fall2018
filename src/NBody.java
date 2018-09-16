@@ -20,14 +20,10 @@ public class NBody {
 	 */
 	public static double readRadius(String fname) throws FileNotFoundException  {
 		Scanner s = new Scanner(new File(fname));
-	
-		// TODO: read values at beginning of file to
-		// find the radius
-		
+		s.nextInt();	//moving over the number of bodies
+		double r = s.nextDouble();
 		s.close();
-		
-		// TODO: return radius read
-		return 0;	
+		return r;	
 	}
 	
 	/**
@@ -40,20 +36,21 @@ public class NBody {
 	public static Body[] readBodies(String fname) throws FileNotFoundException {
 		
 			Scanner s = new Scanner(new File(fname));
-			
-			// TODO: read # bodies, create array, ignore radius
-			int nb = 0; // # bodies to be read
-			
-			for(int k=0; k < nb; k++) {
-				
-				// TODO: read data for each body
-				// construct new body object and add to array
+			int nb = s.nextInt(); // # bodies to be read
+			Body[] bodies = new Body[nb];
+			s.nextDouble();		//moving over the universe radius
+			for(int i = 0; i < nb; i++) {
+				double x = s.nextDouble();
+				double y = s.nextDouble();
+				double xv = s.nextDouble();
+				double yv = s.nextDouble();
+				double mass = s.nextDouble();
+				String name = s.next();
+				Body b = new Body(x, y, xv, yv, mass, name);
+				bodies[i] = b;
 			}
-			
 			s.close();
-			
-			// TODO: return array of body objects read
-			return null;
+			return bodies;
 	}
 	public static void main(String[] args) throws FileNotFoundException{
 		double totalTime = 157788000.0;
@@ -73,20 +70,21 @@ public class NBody {
 		StdDraw.picture(0,0,"images/starfield.jpg");
 	
 		for(double t = 0.0; t < totalTime; t += dt) {
-			
-			// TODO: create double arrays xforces and yforces
-			// to hold forces on each body
-			
-			// TODO: loop over all bodies, calculate
-			// net forces and store in xforces and yforces
-			
-			// TODO: loop over all bodies and call update
-			// with dt and corresponding xforces, yforces values
-			
+			double[] xforces = new double[bodies.length];
+			double[] yforces = new double[bodies.length];
+			for(int i = 0; i < bodies.length; i++) {
+				xforces[i] = bodies[i].calcNetForceExertedByX(bodies);
+			}
+			for(int i = 0; i < bodies.length; i++) {
+				yforces[i] = bodies[i].calcNetForceExertedByY(bodies);
+			}
+			for(int i = 0; i < bodies.length; i++) {
+				bodies[i].update(dt, xforces[i], yforces[i]);
+			}
 			StdDraw.picture(0,0,"images/starfield.jpg");
-			
-			// TODO: loop over all bodies and call draw on each one
-			
+			for(Body b : bodies) {
+				b.draw();
+			}
 			StdDraw.show(10);
 		}
 		
